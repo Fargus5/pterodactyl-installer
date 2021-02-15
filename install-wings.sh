@@ -45,7 +45,7 @@ fi
 # check for curl
 if ! [ -x "$(command -v curl)" ]; then
   echo "* curl is required in order for this script to work."
-  echo "* install using apt (Debian and derivatives) or yum/dnf (CentOS)"
+  echo "* install using apt (raspbian and derivatives) or yum/dnf (CentOS)"
   exit 1
 fi
 
@@ -130,14 +130,14 @@ detect_distro() {
     OS=$(lsb_release -si | awk '{print tolower($0)}')
     OS_VER=$(lsb_release -sr)
   elif [ -f /etc/lsb-release ]; then
-    # For some versions of Debian/Ubuntu without lsb_release command
+    # For some versions of raspbian/Ubuntu without lsb_release command
     . /etc/lsb-release
     OS=$(echo "$DISTRIB_ID" | awk '{print tolower($0)}')
     OS_VER=$DISTRIB_RELEASE
-  elif [ -f /etc/debian_version ]; then
-    # Older Debian/Ubuntu/etc.
-    OS="debian"
-    OS_VER=$(cat /etc/debian_version)
+  elif [ -f /etc/raspbian_version ]; then
+    # Older raspbian/Ubuntu/etc.
+    OS="raspbian"
+    OS_VER=$(cat /etc/raspbian_version)
   elif [ -f /etc/SuSe-release ]; then
     # Older SuSE/etc.
     OS="SuSE"
@@ -178,7 +178,7 @@ check_os_comp() {
       [ "$OS_VER_MAJOR" == "18" ] && SUPPORTED=true
       [ "$OS_VER_MAJOR" == "20" ] && SUPPORTED=true
       ;;
-    debian)
+    raspbian)
       [ "$OS_VER_MAJOR" == "9" ] && SUPPORTED=true
       [ "$OS_VER_MAJOR" == "10" ] && SUPPORTED=true
       ;;
@@ -201,16 +201,16 @@ check_os_comp() {
 
   # check virtualization
   echo -e  "* Installing virt-what..."
-  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
+  if [ "$OS" == "raspbian" ] || [ "$OS" == "ubuntu" ]; then
     # silence dpkg output
-    export DEBIAN_FRONTEND=noninteractive
+    export raspbian_FRONTEND=noninteractive
 
     # install virt-what
     apt-get -y update -qq
     apt-get install -y virt-what -qq
 
     # unsilence
-    unset DEBIAN_FRONTEND
+    unset raspbian_FRONTEND
   elif [ "$OS" == "centos" ]; then
     if [ "$OS_VER_MAJOR" == "7" ]; then
       yum -q -y update
@@ -270,7 +270,7 @@ enable_docker(){
 
 install_docker() {
   echo "* Installing docker .."
-  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
+  if [ "$OS" == "raspbian" ] || [ "$OS" == "ubuntu" ]; then
     # Install dependencies
     apt-get -y install \
       apt-transport-https \
@@ -347,7 +347,7 @@ systemd_file() {
 
 install_mariadb() {
   case "$OS" in
-    ubuntu | debian)
+    ubuntu | raspbian)
       curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash
       apt update && apt install mariadb-server -y
       ;;
@@ -430,7 +430,7 @@ letsencrypt() {
   FAILED=false
 
   # Install certbot
-  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
+  if [ "$OS" == "raspbian" ] || [ "$OS" == "ubuntu" ]; then
     apt-get install certbot -y
   elif [ "$OS" == "centos" ]; then
     [ "$OS_VER_MAJOR" == "7" ] && yum install certbot
@@ -461,7 +461,7 @@ letsencrypt() {
 
 perform_install() {
   echo "* Installing pterodactyl wings.."
-  [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ] && apt_update
+  [ "$OS" == "ubuntu" ] || [ "$OS" == "raspbian" ] && apt_update
   [ "$OS" == "centos" ] && [ "$OS_VER_MAJOR" == "7" ] && yum_update
   [ "$OS" == "centos" ] && [ "$OS_VER_MAJOR" == "8" ] && dnf_update
   [ "$CONFIGURE_UFW" == true ] && firewall_ufw
@@ -523,8 +523,8 @@ main() {
   read -r CONFIRM_INSTALL_MARIADB
   [[ "$CONFIRM_INSTALL_MARIADB" =~ [Yy] ]] && INSTALL_MARIADB=true
 
-  # UFW is available for Ubuntu/Debian
-  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
+  # UFW is available for Ubuntu/raspbian
+  if [ "$OS" == "raspbian" ] || [ "$OS" == "ubuntu" ]; then
     echo -e -n "* Do you want to automatically configure UFW (firewall)? (y/N): "
     read -r CONFIRM_UFW
 
