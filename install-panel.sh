@@ -39,7 +39,7 @@ fi
 # check for curl
 if ! [ -x "$(command -v curl)" ]; then
   echo "* curl is required in order for this script to work."
-  echo "* install using apt (Debian and derivatives) or yum/dnf (CentOS)"
+  echo "* install using apt (raspbian and derivatives) or yum/dnf (CentOS)"
   exit 1
 fi
 
@@ -214,7 +214,7 @@ ask_assume_ssl() {
 
 ask_firewall() {
   case "$OS" in
-    ubuntu | debian)
+    ubuntu | raspbian)
       echo -e -n "* Do you want to automatically configure UFW (firewall)? (y/N): "
       read -r CONFIRM_UFW
 
@@ -248,14 +248,14 @@ detect_distro() {
     OS=$(lsb_release -si | awk '{print tolower($0)}')
     OS_VER=$(lsb_release -sr)
   elif [ -f /etc/lsb-release ]; then
-    # For some versions of Debian/Ubuntu without lsb_release command
+    # For some versions of raspbian/Ubuntu without lsb_release command
     . /etc/lsb-release
     OS=$(echo "$DISTRIB_ID" | awk '{print tolower($0)}')
     OS_VER=$DISTRIB_RELEASE
-  elif [ -f /etc/debian_version ]; then
-    # Older Debian/Ubuntu/etc.
-    OS="debian"
-    OS_VER=$(cat /etc/debian_version)
+  elif [ -f /etc/raspbian_version ]; then
+    # Older raspbian/Ubuntu/etc.
+    OS="raspbian"
+    OS_VER=$(cat /etc/raspbian_version)
   elif [ -f /etc/SuSe-release ]; then
     # Older SuSE/etc.
     OS="SuSE"
@@ -281,7 +281,7 @@ check_os_comp() {
       [ "$OS_VER_MAJOR" == "18" ] && SUPPORTED=true
       [ "$OS_VER_MAJOR" == "20" ] && SUPPORTED=true
       ;;
-    debian)
+    raspbian)
       PHP_SOCKET="/run/php/php7.4-fpm.sock"
       [ "$OS_VER_MAJOR" == "9" ] && SUPPORTED=true
       [ "$OS_VER_MAJOR" == "10" ] && SUPPORTED=true
@@ -421,9 +421,9 @@ configure() {
 
 # set the correct folder permissions depending on OS and webserver
 set_folder_permissions() {
-  # if os is ubuntu or debian, we do this
+  # if os is ubuntu or raspbian, we do this
   case "$OS" in
-    debian | ubuntu)
+    raspbian | ubuntu)
       chown -R www-data:www-data ./* ;;
     centos)
       chown -R nginx:nginx ./* ;;
@@ -463,7 +463,7 @@ dnf_update() {
   dnf -y upgrade
 }
 
-enable_services_debian_based() {
+enable_services_raspbian_based() {
   systemctl enable mariadb
   systemctl enable redis-server
   systemctl start mariadb
@@ -497,7 +497,7 @@ ubuntu20_dep() {
   apt -y install php7.4 php7.4-{cli,gd,mysql,pdo,mbstring,tokenizer,bcmath,xml,fpm,curl,zip} mariadb-server nginx tar unzip git redis-server redis cron
 
   # Enable services
-  enable_services_debian_based
+  enable_services_raspbian_based
 
   echo "* Dependencies for Ubuntu installed!"
 }
@@ -524,19 +524,19 @@ ubuntu18_dep() {
   apt -y install php7.4 php7.4-{cli,gd,mysql,pdo,mbstring,tokenizer,bcmath,xml,fpm,curl,zip} mariadb-server nginx tar unzip git redis-server redis cron
 
   # Enable services
-  enable_services_debian_based
+  enable_services_raspbian_based
 
   echo "* Dependencies for Ubuntu installed!"
 }
 
-debian_stretch_dep() {
-  echo "* Installing dependencies for Debian 8/9.."
+raspbian_stretch_dep() {
+  echo "* Installing dependencies for raspbian 8/9.."
 
   # MariaDB need dirmngr
   apt -y install dirmngr
 
   # install PHP 7.4 using sury's repo instead of PPA
-  # this guide shows how: https://LoneDev6.se/2018/08/22/install-php72-on-Debian-8-and-9.html
+  # this guide shows how: https://LoneDev6.se/2018/08/22/install-php72-on-raspbian-8-and-9.html
   apt install ca-certificates apt-transport-https lsb-release -y
   wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
   echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
@@ -551,19 +551,19 @@ debian_stretch_dep() {
   apt -y install php7.4 php7.4-{cli,gd,mysql,pdo,mbstring,tokenizer,bcmath,xml,fpm,curl,zip} mariadb-server nginx curl tar unzip git redis-server cron
 
   # Enable services
-  enable_services_debian_based
+  enable_services_raspbian_based
 
-  echo "* Dependencies for Debian 8/9 installed!"
+  echo "* Dependencies for raspbian 8/9 installed!"
 }
 
-debian_dep() {
-  echo "* Installing dependencies for Debian 10.."
+raspbian_dep() {
+  echo "* Installing dependencies for raspbian 10.."
 
   # MariaDB need dirmngr
   apt -y install dirmngr
 
   # install PHP 7.4 using sury's repo instead of default 7.2 package (in buster repo)
-  # this guide shows how: https://LoneDev6.se/2018/08/22/install-php72-on-Debian-8-and-9.html
+  # this guide shows how: https://LoneDev6.se/2018/08/22/install-php72-on-raspbian-8-and-9.html
   apt install ca-certificates apt-transport-https lsb-release -y
   wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
   echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
@@ -575,9 +575,9 @@ debian_dep() {
   apt -y install php7.4 php7.4-{cli,gd,mysql,pdo,mbstring,tokenizer,bcmath,xml,fpm,curl,zip} mariadb-server nginx curl tar unzip git redis-server cron
 
   # Enable services
-  enable_services_debian_based
+  enable_services_raspbian_based
 
-  echo "* Dependencies for Debian 10 installed!"
+  echo "* Dependencies for raspbian 10 installed!"
 }
 
 centos7_dep() {
@@ -687,7 +687,7 @@ letsencrypt() {
 
   # Install certbot
   case "$OS" in
-    debian | ubuntu)
+    raspbian | ubuntu)
       apt-get -y install certbot python3-certbot-nginx
       ;;
     centos)
@@ -752,8 +752,8 @@ configure_nginx() {
       # replace all <php_socket> places with correct socket "path"
       sed -i -e "s@<php_socket>@${PHP_SOCKET}@g" /etc/nginx/sites-available/pterodactyl.conf
 
-      # on debian 9, TLS v1.3 is not supported (see #76)
-      [ "$OS" == "debian" ] && [ "$OS_VER_MAJOR" == "9" ] && sed -i 's/ TLSv1.3//' /etc/nginx/sites-available/pterodactyl.conf
+      # on raspbian 9, TLS v1.3 is not supported (see #76)
+      [ "$OS" == "raspbian" ] && [ "$OS_VER_MAJOR" == "9" ] && sed -i 's/ TLSv1.3//' /etc/nginx/sites-available/pterodactyl.conf
 
       # enable pterodactyl
       ln -s /etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-enabled/pterodactyl.conf
@@ -772,7 +772,7 @@ perform_install() {
   echo "* Starting installation.. this might take a while!"
 
   case "$OS" in
-    debian | ubuntu)
+    raspbian | ubuntu)
       apt_update
 
       [ "$CONFIGURE_UFW" == true ] && firewall_ufw
@@ -780,9 +780,9 @@ perform_install() {
       if [ "$OS" == "ubuntu" ]; then
         [ "$OS_VER_MAJOR" == "20" ] && ubuntu20_dep
         [ "$OS_VER_MAJOR" == "18" ] && ubuntu18_dep
-      elif [ "$OS" == "debian" ]; then
-        [ "$OS_VER_MAJOR" == "9" ] && debian_stretch_dep
-        [ "$OS_VER_MAJOR" == "10" ] && debian_dep
+      elif [ "$OS" == "raspbian" ]; then
+        [ "$OS_VER_MAJOR" == "9" ] && raspbian_stretch_dep
+        [ "$OS_VER_MAJOR" == "10" ] && raspbian_dep
       fi
     ;;
 
