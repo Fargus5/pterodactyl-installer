@@ -295,6 +295,8 @@ check_os_comp() {
       SUPPORTED=false ;;
   esac
 
+echo "$OS_VER_MAJOR"
+
   # exit if not supported
   if [ "$SUPPORTED" == true ]; then
     echo "* $OS $OS_VER is supported."
