@@ -252,10 +252,10 @@ detect_distro() {
     . /etc/lsb-release
     OS=$(echo "$DISTRIB_ID" | awk '{print tolower($0)}')
     OS_VER=$DISTRIB_RELEASE
-  elif [ -f /etc/raspbian_version ]; then
+  elif [ -f /etc/debian_version ]; then
     # Older raspbian/Ubuntu/etc.
     OS="raspbian"
-    OS_VER=$(cat /etc/raspbian_version)
+    OS_VER=$(cat /etc/debian_version)
   elif [ -f /etc/SuSe-release ]; then
     # Older SuSE/etc.
     OS="SuSE"
