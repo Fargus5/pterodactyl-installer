@@ -21,10 +21,10 @@ set -e
 #   You should have received a copy of the GNU General Public License       #
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.  #
 #                                                                           #
-# https://github.com/vilhelmprytz/pterodactyl-installer/blob/master/LICENSE #
+# https://github.com/LoneDev6/pterodactyl-installer/blob/master/LICENSE #
 #                                                                           #
 # This script is not associated with the official Pterodactyl Project.      #
-# https://github.com/vilhelmprytz/pterodactyl-installer                     #
+# https://github.com/LoneDev6/pterodactyl-installer                     #
 #                                                                           #
 #############################################################################
 
@@ -61,35 +61,35 @@ done=false
 output "Pterodactyl installation script @ $SCRIPT_VERSION"
 output
 output "Copyright (C) 2018 - 2021, Vilhelm Prytz, <vilhelm@prytznet.se>"
-output "https://github.com/vilhelmprytz/pterodactyl-installer"
+output "https://github.com/LoneDev6/pterodactyl-installer"
 output
-output "Sponsoring/Donations: https://github.com/vilhelmprytz/pterodactyl-installer?sponsor=1"
+output "Sponsoring/Donations: https://github.com/LoneDev6/pterodactyl-installer?sponsor=1"
 output "This script is not associated with the official Pterodactyl Project."
 
 output
 
 panel() {
-  bash <(curl -s https://raw.githubusercontent.com/vilhelmprytz/pterodactyl-installer/$SCRIPT_VERSION/install-panel.sh)
+  bash <(curl -s https://raw.githubusercontent.com/LoneDev6/pterodactyl-installer/$SCRIPT_VERSION/install-panel.sh)
 }
 
 wings() {
-  bash <(curl -s https://raw.githubusercontent.com/vilhelmprytz/pterodactyl-installer/$SCRIPT_VERSION/install-wings.sh)
+  bash <(curl -s https://raw.githubusercontent.com/LoneDev6/pterodactyl-installer/$SCRIPT_VERSION/install-wings.sh)
 }
 
 legacy_panel() {
-  bash <(curl -s https://raw.githubusercontent.com/vilhelmprytz/pterodactyl-installer/$SCRIPT_VERSION/legacy/panel_0.7.sh)
+  bash <(curl -s https://raw.githubusercontent.com/LoneDev6/pterodactyl-installer/$SCRIPT_VERSION/legacy/panel_0.7.sh)
 }
 
 legacy_wings() {
-  bash <(curl -s https://raw.githubusercontent.com/vilhelmprytz/pterodactyl-installer/$SCRIPT_VERSION/legacy/daemon_0.6.sh)
+  bash <(curl -s https://raw.githubusercontent.com/LoneDev6/pterodactyl-installer/$SCRIPT_VERSION/legacy/daemon_0.6.sh)
 }
 
 canary_panel() {
-  bash <(curl -s https://raw.githubusercontent.com/vilhelmprytz/pterodactyl-installer/master/install-panel.sh)
+  bash <(curl -s https://raw.githubusercontent.com/LoneDev6/pterodactyl-installer/master/install-panel.sh)
 }
 
 canary_wings() {
-  bash <(curl -s https://raw.githubusercontent.com/vilhelmprytz/pterodactyl-installer/master/install-wings.sh)
+  bash <(curl -s https://raw.githubusercontent.com/LoneDev6/pterodactyl-installer/master/install-wings.sh)
 }
 
 while [ "$done" == false ]; do
